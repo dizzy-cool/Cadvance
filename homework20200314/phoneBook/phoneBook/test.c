@@ -81,11 +81,12 @@ void AddPersonPhone(phoneBook* add_book) {
 void ModifyPersonPhone(phoneBook* add_book) {
 	//修改联系人
 	//人性化:(*不变)
-	char name[1024] = { 0 };
-	char phone[1024] = { 0 };
-	char gender[1024] = { 0 };
-	char age[1024] = { 0 };
-	char address[1024] = { 0 };
+	printf("修改联系人!\n");
+	//char name[1024] = { 0 };
+	//char phone[1024] = { 0 };
+	//char gender[1024] = { 0 };
+	//char age[1024] = { 0 };
+	//char address[1024] = { 0 };
 	int id = 0; 
 	printf("请输入您想修改的联系人序号:\n");
 	scanf("%d", &id);
@@ -95,7 +96,25 @@ void ModifyPersonPhone(phoneBook* add_book) {
 	}
 	personPhoneBook* info = &add_book->personPhoneInfo[id];
 	
-	printf("请输入修改后的联系人姓名(*不修改):\n");
+	printf("请输入修改后的联系人姓名:\n");
+	scanf("%s", info->name);
+	
+	printf("请输入修改后的性别:\n");
+	scanf("%s", info->gender);
+
+	printf("请输入修改后的年龄:\n");
+	scanf("%s", info->age);
+
+	printf("请输入修改后的电话:\n");
+	scanf("%s", info->phone);
+	
+	printf("请输入修改后的地址:\n");
+	scanf("%s", info->address);
+	
+	printf("修改完成!\n");
+
+
+	/*printf("请输入修改后的联系人姓名(*不修改):\n");
 	scanf("%s", name);
 	if (strcmp(name, "*") != 0) {
 		strcpy(info->name, name);
@@ -120,7 +139,7 @@ void ModifyPersonPhone(phoneBook* add_book) {
 	if (strcmp(address, "*") != 0) {
 		strcpy(info->address, address);
 	}
-	printf("修改完成!\n");
+	printf("修改完成!\n");*/
 	
 
 }
@@ -165,7 +184,7 @@ void FindPersonPhone(phoneBook* add_book) {
 		personPhoneBook* info = &add_book->personPhoneInfo[i];
 		//匹配联系人姓名,注意重名打印序号
 		if (strcmp(name, info->name) == 0) {
-			printf("[%d] 姓名: %s\t性别:%s\t年龄:%s\t电话: %s\t住址:%s\n", i, info->name, info->gender, info->age, info->phone, info->address);
+			printf("[%d] 姓名:%s\t性别:%s\t年龄:%s\t电话:%s\t住址:%s\n", i, info->name, info->gender, info->age, info->phone, info->address);
 
 			//printf("[%d] 姓名: %s\t 电话: %s\n", i, info->name, info->phone);
 			count++;
@@ -179,7 +198,8 @@ void PrintfPersonPhone(phoneBook* add_book) {
 	int i = 0;
 	for (i = 0; i < add_book->size; i++) {
 		personPhoneBook* info = &add_book->personPhoneInfo[i];
-		printf("[%d] 姓名: %s\t性别:%s\t年龄:%s\t电话: %s\t住址:%s\n", i, info->name, info->gender, info->age, info->phone,info->address);
+		printf("[%d] 姓名: %s\t性别:%s\t年龄:%s\t电话: %s\t住址:%s\n", 
+			    i, info->name, info->gender, info->age, info->phone,info->address);
 	}
 	printf("共打印了 %d 个联系人!\n", add_book->size);
 }
@@ -200,28 +220,31 @@ void ClearPersonPhone(phoneBook* add_book) {
 	
 }
 void RankPersonPhone(phoneBook* add_book) {
-	printf("按照姓名首字母排序所有联系人!");
-	char name[1024] = { 0 };
-	char phone[1024] = { 0 };
-	char gender[1024] = { 0 };
-	char age[1024] = { 0 };
-	char address[1024] = { 0 };
-	int id = 0;
+	printf("按照姓名首字母排序所有联系人!\n");
+	///int size = add_book->size;
+	
+	int bound = 0;
 	int i = 0;
-	/*for (i = 0; i < add_book->size; i++) {
-		personPhoneBook* info = &add_book->personPhoneInfo[i];
 
-	}*/
+	//[0, bound)为排序区间;
+	for (bound = 0; bound < add_book->size; bound++) {
+		personPhoneBook* info_bound = &add_book->personPhoneInfo[bound];
+		for (i = 0; i < bound; i++) {
+			personPhoneBook* info_i = &add_book->personPhoneInfo[i];
+			if (strcmp(info_bound->name, info_i->name) > 0) {
+				personPhoneBook tmp;
+				tmp = add_book->personPhoneInfo[bound];
+				add_book->personPhoneInfo[bound] = add_book->personPhoneInfo[i];
+				add_book->personPhoneInfo[i] = tmp;
+			}
+		}
+
+	}
+	PrintfPersonPhone(add_book);
+	printf("排序完毕!\n");
 	return;
 }
-//int bubbleSort(phoneBook* add_book, int size) {
-//	int i, j;
-//	int bound = 0;
-//	//[0, bound)为排序区间;
-//	for (bound = 0; bound < size; bound++) {
-//
-//	}
-//}
+
 
 typedef void(*Fun)(phoneBook*);
 //转移表实现if elseif 的作用 ;Fun func[]要注意写法
