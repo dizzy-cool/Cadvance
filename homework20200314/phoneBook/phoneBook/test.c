@@ -185,8 +185,6 @@ void FindPersonPhone(phoneBook* add_book) {
 		//匹配联系人姓名,注意重名打印序号
 		if (strcmp(name, info->name) == 0) {
 			printf("[%d] 姓名:%s\t性别:%s\t年龄:%s\t电话:%s\t住址:%s\n", i, info->name, info->gender, info->age, info->phone, info->address);
-
-			//printf("[%d] 姓名: %s\t 电话: %s\n", i, info->name, info->phone);
 			count++;
 		}
 	}
@@ -221,8 +219,7 @@ void ClearPersonPhone(phoneBook* add_book) {
 }
 void RankPersonPhone(phoneBook* add_book) {
 	printf("按照姓名首字母排序所有联系人!\n");
-	///int size = add_book->size;
-	
+		
 	int bound = 0;
 	int i = 0;
 
@@ -231,11 +228,13 @@ void RankPersonPhone(phoneBook* add_book) {
 		personPhoneBook* info_bound = &add_book->personPhoneInfo[bound];
 		for (i = 0; i < bound; i++) {
 			personPhoneBook* info_i = &add_book->personPhoneInfo[i];
-			if (strcmp(info_bound->name, info_i->name) > 0) {
+			if (strcmp(info_bound->name, info_i->name) < 0) {
 				personPhoneBook tmp;
-				tmp = add_book->personPhoneInfo[bound];
-				add_book->personPhoneInfo[bound] = add_book->personPhoneInfo[i];
-				add_book->personPhoneInfo[i] = tmp;
+				tmp = *info_bound;
+				*info_bound = *info_i;
+				*info_i = tmp;
+
+				
 			}
 		}
 
@@ -268,6 +267,10 @@ int main(void) {
 		if (choice == 0) {
 			printf(" goodbye!\n");
 			break;
+		}
+		else if (choice > 7 || choice < 0) {
+			printf("您的输入有误,请重新输入!\n");
+			continue;
 		}
 		func[choice](&address_book);			//进入转移表执行函数
 		
