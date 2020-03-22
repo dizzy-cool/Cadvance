@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_SIZE 200
+//#define MAX_SIZE 200
 
 typedef struct personPhoneBook {
 	char name[1024];
@@ -14,16 +14,24 @@ typedef struct personPhoneBook {
 }personPhoneBook;
 
 typedef struct phoneBook {
-	personPhoneBook personPhoneInfo[MAX_SIZE];
+	personPhoneBook *personPhoneInfo;
+	//[修改1]
 	int size;
+	int capacity;//当前数组的最大容量
 }phoneBook;
 
 //初始化
 void phoneBookInit(phoneBook* addr) {
-	addr->size = 0;
-	int  i = 0;
 
-	for (i = 0; i < MAX_SIZE; i++) {
+
+	addr->size = 0;
+
+	//[修改2]
+	addr->capacity = 20; //20是最大的容量个数
+	addr->personPhoneInfo = (personPhoneBook*)malloc(addr->capacity * sizeof(personPhoneBook));	
+
+	int  i = 0;
+	for (i = 0; i < addr->capacity; i++) {
 		personPhoneBook* info = &addr->personPhoneInfo[i];
 		strcpy(info->name, " ");
 		strcpy(info->address, " ");
@@ -53,14 +61,35 @@ int menu() {
 	return choice;
 
 }
+void ReallocPersons(phoneBook* add_book) {
+	//方法一: 使用realloc扩容
+	add_book->capacity += 20;
+	add_book->personPhoneInfo = (personPhoneBook*)realloc(add_book->personPhoneInfo, add_book->capacity * sizeof(personPhoneBook));
+
+	////方法二: 使用malloc手动模拟realloc扩大内存
+	////1.先增加capacity的值;
+	//add_book->capacity += 20;
+	////2.再增加personPhoneInfo的内存
+	//personPhoneBook* newPersonInfo = (personPhoneBook*)malloc(add_book->capacity * sizeof(personPhoneBook));
+	////3.把就的内存数据拷贝到新的内存空间,可以使用memcpy,循环数组,也可以通过结构体赋值
+	////memcpy(newPersonInfo, add_book->capacity, add_book->size * sizeof(personPhoneBook));
+	//for (int i = 0; i < add_book->size; i++) {
+	//	newPersonInfo[i] = add_book->personPhoneInfo[i];
+	//}
+	////4.释放原来的内存;
+	//free(add_book->personPhoneInfo);
+	////5.新内存上位
+	//add_book->personPhoneInfo = newPersonInfo;
+
+}
 
 void AddPersonPhone(phoneBook* add_book) {
 	//添加姓名和电话
 	//[0, size)是有效部分
 	printf("新增联系人!\n");
-	if (add_book->size >= MAX_SIZE) {
-		printf("通讯录已满,添加失败\n");
-		return;
+	if (add_book->size >= add_book->capacity) {
+		//printf("通讯录已满,添加失败\n");
+		ReallocPersons(add_book);
 	}
 
 	personPhoneBook* info = &add_book->personPhoneInfo[add_book->size];
