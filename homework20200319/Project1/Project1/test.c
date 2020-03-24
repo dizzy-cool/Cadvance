@@ -36,6 +36,37 @@ char* Strncpy(char* destion, const char* source, size_t num) {
 	destion[i] = '\0';
 	return destion;
 }
+
+void findSingleNum(int arr[], int num, int* res) {
+	//按位异或法
+	//1.将所有的元素按位异或,得到的是狗a^狗b
+	int ret = 0;
+	int i = 0;
+	for (; i < num; i++) {
+		ret = ret ^ arr[i];
+	}
+	printf("%d\n", ret);
+	// 此时 sum 的值就等价于 num1 ^ num2, 这个整数中一定存在某个比特位 为 1
+	//2.将a^b结果中的 1 bit位,将原数组分为两类,能保证两个数组中各有一个singleNum
+
+	int pos = 0;
+	for (; pos < 32; pos++) {
+		if ((ret & (1 << pos)) != 0) {
+			break;
+		}
+	}
+	//3.在进行数组中寻找单个 singleNum
+	//    按照 pos 位置的元素是 1 还是 0 把整个数组分成两个部分, 分别进行按位异或
+	for (i = 0; i < num; i++) {
+		if ((arr[i] & (1 << pos)) == 0) {  // 优先级顺序  ! >算术运算符  > 关系运算符 > && > || > 赋值运算符
+											//   其中       关系运算符 >    按位& ^ | && ||
+			res[0] = res[0] ^ arr[i];
+		}
+		else {
+			res[1] = res[1] ^ arr[i];
+		}
+	}
+}
 void BubbleSort(int* arr, int num) {
 	int bound = 0;
 	int i = 0;
@@ -117,12 +148,13 @@ int main(void) {
 
 
 	int arr[] = { 1, 3, 4, 1, 3, 5 };
-	int res[2] = { 0 };
-	findSingleDog(arr, sizeof(arr) / sizeof(arr[0]), res);
+	int res[2] = { 0, 0 };
+	findSingleNum(arr, sizeof(arr) / sizeof(arr[0]), res);
 	//BubbleSort(arr, sizeof(arr) / sizeof(arr[0]));
 	for (int i = 0; i < sizeof(arr) / sizeof(arr[0]); i++) {
 		printf("%d\t", arr[i]);
 	}
+	printf("\n");
 	printf("%d %d", res[0], res[1]);
 	system("pause");
 	return 0;
