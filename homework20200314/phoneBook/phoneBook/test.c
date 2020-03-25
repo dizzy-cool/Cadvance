@@ -42,6 +42,8 @@ void phoneBookInit(phoneBook* addr) {
 	return;
 }
 
+
+
 int menu() {
 	printf("================================================\n");
 	printf("请输入您的选项:\n");
@@ -83,6 +85,46 @@ void ReallocPersons(phoneBook* add_book) {
 
 }
 
+void loadPersons(phoneBook* add_book) {
+	//打开文件 
+	FILE *fp = fopen("E:\phone.txt", "r");
+	personPhoneBook tmp = { 0 };
+	if (fp == NULL) {
+		perror("打开文件失败!\n");
+		exit(EXIT_FAILURE);
+	}
+	//循环读取文件内容, 并把数据存储在通讯录的结构体中
+	while (1) {
+		int n = fread(&tmp, sizeof(personPhoneBook), 1, fp);
+		if (n < 1) {
+			break;
+		}
+		//涉及扩容
+		if (add_book->size >= add_book->capacity) {
+			ReallocPersons(add_book);
+		}
+		add_book->personPhoneInfo[add_book->size] = tmp;
+		add_book->size++;
+	}
+	fclose(fp);
+}
+void savePersons(phoneBook* add_book) {
+	//先打开文件
+	FILE * fp = fopen("E:\phone.txt", "w");
+
+	if (fp == NULL) {
+		perror("打开文件失败!\n");
+		return;
+	}
+	//把结构体内容存在文件中
+	for (int i = 0; i < add_book->size; i++) {
+		fwrite(&add_book->personPhoneInfo[i], sizeof(personPhoneBook), 1, fp);
+
+	}
+	printf("保存成功!\n");
+	fclose(fp);
+
+}
 void AddPersonPhone(phoneBook* add_book) {
 	//添加姓名和电话
 	//[0, size)是有效部分
@@ -248,7 +290,7 @@ void ClearPersonPhone(phoneBook* add_book) {
 }
 void RankPersonPhone(phoneBook* add_book) {
 	printf("按照姓名首字母排序所有联系人!\n");
-		
+	
 	int bound = 0;
 	int i = 0;
 
@@ -262,11 +304,8 @@ void RankPersonPhone(phoneBook* add_book) {
 				tmp = *info_bound;
 				*info_bound = *info_i;
 				*info_i = tmp;
-
-				
 			}
 		}
-
 	}
 	PrintfPersonPhone(add_book);
 	printf("排序完毕!\n");
@@ -291,9 +330,11 @@ int main(void) {
 	phoneBook address_book;
 	//通讯录初始化
 	phoneBookInit(&address_book);
+	loadPersons(&address_book);
 	while (1) {
 		int choice = menu();
 		if (choice == 0) {
+			savePersons(&address_book);
 			printf(" goodbye!\n");
 			break;
 		}
